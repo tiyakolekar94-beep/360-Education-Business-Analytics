@@ -1,0 +1,81 @@
+table placements
+	lineageTag: 0381e460-fade-418e-bafa-31e0cb37067a
+
+	column placement_id
+		dataType: string
+		lineageTag: 2f2a2449-649a-4280-87af-d9f3056c29b9
+		summarizeBy: none
+		sourceColumn: placement_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column student_id
+		dataType: string
+		lineageTag: 8aa50f3c-333a-4b29-b53f-c47c9ba0c525
+		summarizeBy: none
+		sourceColumn: student_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column placement_status
+		dataType: string
+		lineageTag: 40f893c2-a93a-4e50-aaf6-1b830a771056
+		summarizeBy: none
+		sourceColumn: placement_status
+
+		annotation SummarizationSetBy = Automatic
+
+	column placement_calls_given
+		dataType: int64
+		formatString: 0
+		lineageTag: 30503a35-885e-4965-ab6b-38eb751b49d5
+		summarizeBy: sum
+		sourceColumn: placement_calls_given
+
+		annotation SummarizationSetBy = Automatic
+
+	column company_name
+		dataType: string
+		lineageTag: 7a4aebb7-b2bb-4a95-afb1-946afe40eb67
+		summarizeBy: none
+		sourceColumn: company_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'placement success'
+		dataType: string
+		lineageTag: fdf02d2f-e9a5-4b60-924a-99e585e5ede6
+		summarizeBy: none
+		sourceColumn: placement success
+
+		annotation SummarizationSetBy = Automatic
+
+	column salary_package_lpa
+		dataType: double
+		lineageTag: 71a63fe8-f6ae-491b-ad0a-c0e43d63b25b
+		summarizeBy: sum
+		sourceColumn: salary_package_lpa
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition placements = m
+		mode: import
+		source =
+				let
+				    Source = MySQL.Database("localhost", "360_education_db", [ReturnSingleDatabase=true]),
+				    #"360_education_db_placements" = Source{[Schema="360_education_db",Item="placements"]}[Data],
+				    #"Added Conditional Column" = Table.AddColumn(#"360_education_db_placements", "placement success", each if [placement_status] = "placed" then "success" else "not placed"),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Added Conditional Column",{{"placement success", type text}}),
+				    #"Added Conditional Column1" = Table.AddColumn(#"Changed Type", "salary_package_lpa1", each if [placement success] = "not placed" then 0 else [salary_package_lpa]),
+				    #"Removed Columns" = Table.RemoveColumns(#"Added Conditional Column1",{"salary_package_lpa"}),
+				    #"Renamed Columns" = Table.RenameColumns(#"Removed Columns",{{"salary_package_lpa1", "salary_package_lpa"}}),
+				    #"Changed Type1" = Table.TransformColumnTypes(#"Renamed Columns",{{"salary_package_lpa", type number}})
+				in
+				    #"Changed Type1"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

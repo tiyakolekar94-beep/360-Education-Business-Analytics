@@ -1,0 +1,25 @@
+table 'student measures'
+	lineageTag: 8263acbd-4835-4a37-8aa3-d6e8a099adfd
+
+	measure 'total students' = DISTINCTCOUNT(students_dim[student_id])
+		formatString: 0
+		lineageTag: e64a317d-2d9c-49b1-9225-c5e761f12481
+
+	measure 'total admission' = ```
+			DISTINCTCOUNT(admissions[admission id]) 
+			```
+		formatString: 0
+		lineageTag: 9ed65755-bc4c-49b4-b089-cf6e0d6e943c
+
+	partition 'student measures' = m
+		mode: import
+		source =
+				let
+				    Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i44FAA==", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [Column1 = _t]),
+				    #"Changed Type" = Table.TransformColumnTypes(Source,{{"Column1", type text}}),
+				    #"Removed Columns" = Table.RemoveColumns(#"Changed Type",{"Column1"})
+				in
+				    #"Removed Columns"
+
+	annotation PBI_ResultType = Table
+

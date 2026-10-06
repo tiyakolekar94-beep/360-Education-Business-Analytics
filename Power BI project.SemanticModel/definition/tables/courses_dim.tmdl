@@ -1,0 +1,42 @@
+table courses_dim
+	lineageTag: 8833cd88-83e6-48c7-a40f-bb5a995de085
+
+	column 'course id'
+		dataType: string
+		lineageTag: 75f7bdbb-734e-4f83-8689-032f09e6d808
+		summarizeBy: none
+		sourceColumn: course id
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'course name'
+		dataType: string
+		lineageTag: 83924cd3-fb90-4232-a3bb-7d04fa22e258
+		summarizeBy: none
+		sourceColumn: course name
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'course fee'
+		dataType: int64
+		formatString: 0
+		lineageTag: 7ae262f4-54e1-435f-ac2e-7f58a0716c68
+		summarizeBy: none
+		sourceColumn: course fee
+
+		annotation SummarizationSetBy = Automatic
+
+	partition courses_dim = m
+		mode: import
+		source =
+				let
+				    Source = MySQL.Database("localhost", "360_education_db", [ReturnSingleDatabase=true]),
+				    #"360_education_db_courses" = Source{[Schema="360_education_db",Item="courses"]}[Data],
+				    #"Renamed Columns" = Table.RenameColumns(#"360_education_db_courses",{{"course_id", "course id"}, {"course_name", "course name"}, {"course_fee", "course fee"}})
+				in
+				    #"Renamed Columns"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

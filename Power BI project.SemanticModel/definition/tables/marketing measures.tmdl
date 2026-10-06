@@ -1,0 +1,32 @@
+table 'marketing measures'
+	lineageTag: 750c9e90-6e15-42a9-8853-9aacae3ca44f
+
+	measure 'total ad spend' = SUM(marketing[ad_spend])
+		formatString: 0
+		lineageTag: 6567fb25-98e7-4911-9245-7bee50ff10f5
+
+	measure 'total marketing leads' = ```
+			SUM(marketing[leads_generated]) 
+			```
+		formatString: 0
+		lineageTag: 8c7fc0ba-c88d-48c9-9054-34e31961a7ec
+
+	measure 'cost per lead' = ```
+			DIVIDE([total ad spend],[total marketing leads]) 
+			```
+		lineageTag: 2d1bdac4-7c84-45b6-af6b-46c57994baf6
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition 'marketing measures' = m
+		mode: import
+		source =
+				let
+				    Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i44FAA==", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [Column1 = _t]),
+				    #"Changed Type" = Table.TransformColumnTypes(Source,{{"Column1", type text}}),
+				    #"Removed Columns" = Table.RemoveColumns(#"Changed Type",{"Column1"})
+				in
+				    #"Removed Columns"
+
+	annotation PBI_ResultType = Table
+

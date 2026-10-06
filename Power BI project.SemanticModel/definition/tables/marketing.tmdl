@@ -1,0 +1,92 @@
+table marketing
+	lineageTag: 6a77bded-0a72-454f-9c3d-3307ab658a1d
+
+	column campaign_id
+		dataType: string
+		lineageTag: 0d7c2bd4-8e17-40df-9c78-7b93e0fbe6ad
+		summarizeBy: none
+		sourceColumn: campaign_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column platform
+		dataType: string
+		lineageTag: 7423940a-adf1-49db-835f-5404c60838ba
+		summarizeBy: none
+		sourceColumn: platform
+
+		annotation SummarizationSetBy = Automatic
+
+	column ad_spend
+		dataType: int64
+		formatString: 0
+		lineageTag: 446f7a8d-f77d-462b-a0c7-e0ffbb764ba5
+		summarizeBy: sum
+		sourceColumn: ad_spend
+
+		annotation SummarizationSetBy = Automatic
+
+	column leads_generated
+		dataType: int64
+		formatString: 0
+		lineageTag: 9f54ad1e-ac2f-4a39-a5e9-662ca5896c72
+		summarizeBy: sum
+		sourceColumn: leads_generated
+
+		annotation SummarizationSetBy = Automatic
+
+	column admission_converted
+		dataType: int64
+		formatString: 0
+		lineageTag: c9241d44-edab-4183-b94c-26b7657bc14f
+		summarizeBy: sum
+		sourceColumn: admission_converted
+
+		annotation SummarizationSetBy = Automatic
+
+	column campaign_month
+		dataType: string
+		lineageTag: 980597c3-23fd-4b6b-aa4f-9ba7eb778b97
+		summarizeBy: none
+		sourceColumn: campaign_month
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Cost per lead'
+		dataType: double
+		lineageTag: 666e4ba5-7d30-4505-a29d-3f27a8e63ade
+		summarizeBy: sum
+		sourceColumn: Cost per lead
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'conversion rate'
+		dataType: double
+		lineageTag: d11e3308-378e-481b-968a-85aed67be8ee
+		summarizeBy: sum
+		sourceColumn: conversion rate
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition marketing = m
+		mode: import
+		source =
+				let
+				    Source = MySQL.Database("localhost", "360_education_db", [ReturnSingleDatabase=true]),
+				    #"360_education_db_marketing" = Source{[Schema="360_education_db",Item="marketing"]}[Data],
+				    #"Added Custom" = Table.AddColumn(#"360_education_db_marketing", "Cost per lead", each [ad_spend]/[leads_generated]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Added Custom",{{"Cost per lead", type number}}),
+				    #"Added Custom1" = Table.AddColumn(#"Changed Type", "Custom", each [admission_converted]/[leads_generated] *100),
+				    #"Changed Type1" = Table.TransformColumnTypes(#"Added Custom1",{{"Custom", type number}}),
+				    #"Renamed Columns" = Table.RenameColumns(#"Changed Type1",{{"Custom", "conversion rate"}})
+				in
+				    #"Renamed Columns"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

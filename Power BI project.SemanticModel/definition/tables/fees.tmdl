@@ -1,0 +1,84 @@
+table fees
+	lineageTag: 4ea93610-f38f-4c72-8f86-f789f993c51c
+
+	column payment_id
+		dataType: string
+		lineageTag: 93e2474d-673f-43ae-acf5-bc3fe5215831
+		summarizeBy: none
+		sourceColumn: payment_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column student_id
+		dataType: string
+		lineageTag: 28bd8284-ae4b-42af-98d2-58e20637986c
+		summarizeBy: none
+		sourceColumn: student_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column total_fee
+		dataType: int64
+		formatString: 0
+		lineageTag: cc92645e-ecd0-44f7-848b-ca3f8dbed6ba
+		summarizeBy: sum
+		sourceColumn: total_fee
+
+		annotation SummarizationSetBy = Automatic
+
+	column paid_fee
+		dataType: int64
+		formatString: 0
+		lineageTag: 09f6ce08-3d53-4db7-b5f6-65091077626d
+		summarizeBy: sum
+		sourceColumn: paid_fee
+
+		annotation SummarizationSetBy = Automatic
+
+	column remaining_fee
+		dataType: int64
+		formatString: 0
+		lineageTag: 539c0b8a-a0df-48ee-a32b-44ef17b5533d
+		summarizeBy: sum
+		sourceColumn: remaining_fee
+
+		annotation SummarizationSetBy = Automatic
+
+	column payment_status
+		dataType: string
+		lineageTag: 775ef7b1-edd4-4334-8d85-1af540de29c6
+		summarizeBy: none
+		sourceColumn: payment_status
+
+		annotation SummarizationSetBy = Automatic
+
+	column payment_mode
+		dataType: string
+		lineageTag: 18771abf-9d02-4eee-8c72-f8d18bcf6724
+		summarizeBy: none
+		sourceColumn: payment_mode
+
+		annotation SummarizationSetBy = Automatic
+
+	column collection%
+		dataType: string
+		lineageTag: 2d027573-2315-4bd3-bce9-b40e678b403a
+		summarizeBy: none
+		sourceColumn: collection%
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fees = m
+		mode: import
+		source =
+				let
+				    Source = MySQL.Database("localhost", "360_education_db", [ReturnSingleDatabase=true]),
+				    #"360_education_db_fees" = Source{[Schema="360_education_db",Item="fees"]}[Data],
+				    #"Added Custom" = Table.AddColumn(#"360_education_db_fees", "collection%", each [paid_fee]/[total_fee] *100)
+				in
+				    #"Added Custom"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

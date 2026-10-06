@@ -1,0 +1,41 @@
+table 'call measures'
+	lineageTag: 8abfccf2-076f-49b8-a47d-cdd9b6e8358c
+
+	measure 'total call' = ```
+			COUNT(calls[call_id]) 
+			```
+		formatString: 0
+		lineageTag: 2ea9e468-9264-47cd-a36a-e1acc9bd915c
+
+	measure 'effective call' = ```
+			CALCULATE(COUNT(calls[call_id]),calls[call category]="effective call") 
+			```
+		formatString: 0
+		lineageTag: 20099f46-39dc-4560-89bf-f749ed188cfa
+
+	measure 'effective call %' = ```
+			DIVIDE([effective call],[total call])*100 
+			```
+		lineageTag: b522164e-cbe8-4d55-83d2-fce2fd837b7c
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Column1
+		dataType: string
+		lineageTag: c124c450-8d9d-4f32-8b2c-30f75072f6b2
+		summarizeBy: none
+		sourceColumn: Column1
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'call measures' = m
+		mode: import
+		source =
+				let
+				    Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i44FAA==", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [Column1 = _t]),
+				    #"Changed Type" = Table.TransformColumnTypes(Source,{{"Column1", type text}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_ResultType = Table
+

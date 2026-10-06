@@ -1,0 +1,78 @@
+table calls
+	lineageTag: 6a80a1a1-ac1b-48a0-9a09-8189a0c13fae
+
+	column call_id
+		dataType: string
+		lineageTag: 59504f18-b9b7-4fbc-a3d5-7bce85dee0a2
+		summarizeBy: none
+		sourceColumn: call_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column student_id
+		dataType: string
+		lineageTag: 4401b784-c145-4c8f-81e5-ecad32cb1bab
+		summarizeBy: none
+		sourceColumn: student_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column call_date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 6b12b069-a91c-4ec5-a081-a2fc82f2fd10
+		summarizeBy: none
+		sourceColumn: call_date
+
+		variation Variation
+			isDefault
+			relationship: 3333d37e-29c7-42b2-83d3-72c23e5322d2
+			defaultHierarchy: LocalDateTable_1bfd8568-2da0-4529-a3ca-2e637c64558f.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column call_status
+		dataType: string
+		lineageTag: 786f53be-a71e-495d-9f7c-0b32b86b08ad
+		summarizeBy: none
+		sourceColumn: call_status
+
+		annotation SummarizationSetBy = Automatic
+
+	column call_duration_min
+		dataType: string
+		lineageTag: dd830d7f-960f-4ad3-a292-76d22c926b1b
+		summarizeBy: none
+		sourceColumn: call_duration_min
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'call category'
+		dataType: string
+		lineageTag: 5ef22516-24d5-436c-9625-89d2cf629527
+		summarizeBy: none
+		sourceColumn: call category
+
+		annotation SummarizationSetBy = Automatic
+
+	partition calls = m
+		mode: import
+		source =
+				let
+				    Source = MySQL.Database("localhost", "360_education_db", [ReturnSingleDatabase=true]),
+				    #"360_education_db_calls" = Source{[Schema="360_education_db",Item="calls"]}[Data],
+				    #"Added Conditional Column" = Table.AddColumn(#"360_education_db_calls", "Custom", each if [call_status] = "Not Connected" then 0 else [call_duration_min]),
+				    #"Removed Columns" = Table.RemoveColumns(#"Added Conditional Column",{"call_duration_min"}),
+				    #"Renamed Columns" = Table.RenameColumns(#"Removed Columns",{{"Custom", "call_duration_min"}}),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Renamed Columns",{{"call_date", type date}}),
+				    #"Added Conditional Column1" = Table.AddColumn(#"Changed Type", "call category", each if [call_duration_min] > 10 then "Effective call" else "Short call"),
+				    #"Changed Type1" = Table.TransformColumnTypes(#"Added Conditional Column1",{{"call category", type text}})
+				in
+				    #"Changed Type1"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

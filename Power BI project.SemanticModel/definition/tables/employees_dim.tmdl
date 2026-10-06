@@ -1,0 +1,57 @@
+table employees_dim
+	lineageTag: a211b327-8564-4b7f-bced-95adc926b423
+
+	column emp_id
+		dataType: string
+		lineageTag: e972b422-9165-40d0-acb6-9f3db60d8800
+		summarizeBy: none
+		sourceColumn: emp_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column emp_name
+		dataType: string
+		lineageTag: 617615d6-bf6c-46cb-b5cd-272d5e044a4a
+		summarizeBy: none
+		sourceColumn: emp_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column department
+		dataType: string
+		lineageTag: f18b0888-f331-4c1b-979f-7a50d9193537
+		summarizeBy: none
+		sourceColumn: department
+
+		annotation SummarizationSetBy = Automatic
+
+	column branch_id
+		dataType: string
+		lineageTag: 026fb64f-3fc3-4706-a0eb-677cf76010b2
+		summarizeBy: none
+		sourceColumn: branch_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column salary
+		dataType: int64
+		formatString: 0
+		lineageTag: 0513a63a-6ef3-40c3-ad27-4e4c0d7e63d6
+		summarizeBy: none
+		sourceColumn: salary
+
+		annotation SummarizationSetBy = Automatic
+
+	partition employees_dim = m
+		mode: import
+		source =
+				let
+				    Source = MySQL.Database("localhost", "360_education_db", [ReturnSingleDatabase=true]),
+				    #"360_education_db_employees" = Source{[Schema="360_education_db",Item="employees"]}[Data]
+				in
+				    #"360_education_db_employees"
+
+	changedProperty = Name
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,39 @@
+model Model
+	culture: en-IN
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-IN
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_QueryOrder = ["admissions","branches_dim","calls","courses_dim","employees_dim","fees","leads","marketing","placements","students_dim","Revenue measures","student measures","lead measures","placement measures","call measures","marketing measures","students measures"]
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table admissions
+ref table DateTableTemplate_07df0f09-4c11-4d48-a498-6f34040870ac
+ref table branches_dim
+ref table calls
+ref table LocalDateTable_1bfd8568-2da0-4529-a3ca-2e637c64558f
+ref table courses_dim
+ref table employees_dim
+ref table fees
+ref table leads
+ref table LocalDateTable_d05b6aec-39ed-4d99-a452-c6c25a1d5e11
+ref table marketing
+ref table placements
+ref table students_dim
+ref table 'Revenue measures'
+ref table 'student measures'
+ref table 'lead measures'
+ref table 'placement measures'
+ref table 'call measures'
+ref table 'marketing measures'
+ref table DateTable
+ref table LocalDateTable_d55e8760-6ee0-4e20-8668-8d66b6ef37ad
+ref table 'students measures'
+
+ref cultureInfo en-IN
+

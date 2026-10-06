@@ -1,0 +1,88 @@
+table students_dim
+	lineageTag: 9dca9d45-ca3a-469f-b87f-a01b776d901f
+
+	column student_id
+		dataType: string
+		lineageTag: c34b6972-b41c-47a1-ae6b-13d830f062fe
+		summarizeBy: none
+		sourceColumn: student_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column student_name
+		dataType: string
+		lineageTag: 128c9f94-4d5f-4d30-8fb1-983642cf650b
+		summarizeBy: none
+		sourceColumn: student_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column gender
+		dataType: string
+		lineageTag: 1fd424f8-53ae-4b4d-834d-a2004a8252b3
+		summarizeBy: none
+		sourceColumn: gender
+
+		annotation SummarizationSetBy = Automatic
+
+	column city
+		dataType: string
+		lineageTag: d8724d18-2d1a-4e75-87c8-452a250cf917
+		summarizeBy: none
+		sourceColumn: city
+
+		annotation SummarizationSetBy = Automatic
+
+	column branch_id
+		dataType: string
+		lineageTag: dd90c999-9546-424b-86bf-9c2074077f4f
+		summarizeBy: none
+		sourceColumn: branch_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column course_id
+		dataType: string
+		lineageTag: 908fe70a-4f1f-4ade-ba0d-7f5f6c65bd98
+		summarizeBy: none
+		sourceColumn: course_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column admission_date
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 8f82cddc-ca4d-49b2-9350-56d52c6f14a2
+		summarizeBy: none
+		sourceColumn: admission_date
+
+		annotation SummarizationSetBy = Automatic
+
+	column email
+		dataType: string
+		lineageTag: 9ea25f6b-0bef-40ec-9a89-a46daf631fe4
+		summarizeBy: none
+		sourceColumn: email
+
+		annotation SummarizationSetBy = Automatic
+
+	column phone
+		dataType: int64
+		formatString: 0
+		lineageTag: d5120214-a9f6-4671-aa8a-6de0111cccd2
+		summarizeBy: sum
+		sourceColumn: phone
+
+		annotation SummarizationSetBy = Automatic
+
+	partition students_dim = m
+		mode: import
+		source =
+				let
+				    Source = MySQL.Database("localhost", "360_education_db", [ReturnSingleDatabase=true]),
+				    #"360_education_db_students" = Source{[Schema="360_education_db",Item="students"]}[Data]
+				in
+				    #"360_education_db_students"
+
+	annotation PBI_ResultType = Table
+

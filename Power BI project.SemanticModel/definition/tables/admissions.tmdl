@@ -1,0 +1,88 @@
+table admissions
+	lineageTag: ecacb31f-e8d5-4a3d-9483-92f3b2382618
+
+	column 'admission id'
+		dataType: string
+		lineageTag: e0b7f229-03b3-4cfd-b0f8-e032cb3af1fe
+		summarizeBy: none
+		sourceColumn: admission id
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'student id'
+		dataType: string
+		lineageTag: b058c3e4-512a-4a8e-9781-7f7fd1eeb378
+		summarizeBy: none
+		sourceColumn: student id
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'branch id'
+		dataType: string
+		lineageTag: 304f0bf5-80d4-4c91-9fb5-d4d637aad390
+		summarizeBy: none
+		sourceColumn: branch id
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'course id'
+		dataType: string
+		lineageTag: 63a87506-4879-4d4f-bc36-aaa0bc74fe6b
+		summarizeBy: none
+		sourceColumn: course id
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'lead source'
+		dataType: string
+		lineageTag: 5901233c-14b1-4015-86a5-af300ed926d9
+		summarizeBy: none
+		sourceColumn: lead source
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'counselor id'
+		dataType: string
+		lineageTag: b71396ae-e875-45ea-a57c-c2163e9edf1a
+		summarizeBy: none
+		sourceColumn: counselor id
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'admission date'
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 30e740a6-8e8e-4fc3-91d6-ef52e3cb6ddc
+		summarizeBy: none
+		sourceColumn: admission date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'course fee'
+		dataType: int64
+		formatString: 0
+		lineageTag: 6139535f-9983-43d3-8c69-d4b6f9b2cdaf
+		summarizeBy: sum
+		sourceColumn: course fee
+
+		annotation SummarizationSetBy = Automatic
+
+	partition admissions = m
+		mode: import
+		source =
+				let
+				    Source = MySQL.Database("localhost", "360_education_db", [ReturnSingleDatabase=true]),
+				    #"360_education_db_admissions" = Source{[Schema="360_education_db",Item="admissions"]}[Data],
+				    #"Renamed Columns" = Table.RenameColumns(#"360_education_db_admissions",{{"admission_id", "admission id"}, {"student_id", "student id"}, {"branch_id", "branch id"}, {"course_id", "course id"}, {"lead_source", "lead source"}, {"counselor_id", "counselor id"}, {"admission_date", "admission date"}, {"course_fee", "course fee"}}),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Renamed Columns",{{"admission date", type date}}),
+				    #"Added Custom" = Table.AddColumn(#"Changed Type", "Custom", each Date.MonthName([admission date])),
+				    #"Removed Columns" = Table.RemoveColumns(#"Added Custom",{"Custom"})
+				in
+				    #"Removed Columns"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

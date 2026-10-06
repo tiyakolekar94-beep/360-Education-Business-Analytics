@@ -1,0 +1,24 @@
+table 'placement measures'
+	lineageTag: 1a50926b-dacb-4431-a649-d4da82055b8b
+
+	measure 'placed student' = CALCULATE(COUNT(placements[placement_id]),placements[placement_status]="placed")
+		formatString: 0
+		lineageTag: 0a0708d8-780e-47d7-8085-077502d63d2a
+
+	measure 'placement rate' = DIVIDE([placed student],[total students])*100
+		lineageTag: db2a1cba-ba43-4ace-b871-169ab6dbfb7c
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition 'placement measures' = m
+		mode: import
+		source =
+				let
+				    Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i44FAA==", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [Column1 = _t]),
+				    #"Changed Type" = Table.TransformColumnTypes(Source,{{"Column1", type text}}),
+				    #"Removed Columns" = Table.RemoveColumns(#"Changed Type",{"Column1"})
+				in
+				    #"Removed Columns"
+
+	annotation PBI_ResultType = Table
+

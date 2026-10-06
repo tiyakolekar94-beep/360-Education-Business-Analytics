@@ -1,0 +1,73 @@
+table leads
+	lineageTag: b0e7b84b-8fdf-4e25-9f3b-71f9b5090c19
+
+	column lead_id
+		dataType: string
+		lineageTag: fe1d4b61-f6ec-43c5-880b-80560fae790b
+		summarizeBy: none
+		sourceColumn: lead_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column student_name
+		dataType: string
+		lineageTag: 43d9c42a-aa67-452c-b037-94495851e205
+		summarizeBy: none
+		sourceColumn: student_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column lead_source
+		dataType: string
+		lineageTag: 137f8440-c797-4363-9aa3-062a88a68c94
+		summarizeBy: none
+		sourceColumn: lead_source
+
+		annotation SummarizationSetBy = Automatic
+
+	column branch_id
+		dataType: string
+		lineageTag: d8e2ca7d-ff52-41db-941a-8324f0d2796f
+		summarizeBy: none
+		sourceColumn: branch_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column lead_status
+		dataType: string
+		lineageTag: a8697655-244a-41b0-9d15-8047daf15b41
+		summarizeBy: none
+		sourceColumn: lead_status
+
+		annotation SummarizationSetBy = Automatic
+
+	column generated_date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 25ada0e8-bac1-4b38-bb5e-ca5f991a71ef
+		summarizeBy: none
+		sourceColumn: generated_date
+
+		variation Variation
+			isDefault
+			relationship: acd98fe9-00d8-44b8-a48f-5301195e063a
+			defaultHierarchy: LocalDateTable_d05b6aec-39ed-4d99-a452-c6c25a1d5e11.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	partition leads = m
+		mode: import
+		source =
+				let
+				    Source = MySQL.Database("localhost", "360_education_db", [ReturnSingleDatabase=true]),
+				    #"360_education_db_leads" = Source{[Schema="360_education_db",Item="leads"]}[Data],
+				    #"Changed Type" = Table.TransformColumnTypes(#"360_education_db_leads",{{"generated_date", type date}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

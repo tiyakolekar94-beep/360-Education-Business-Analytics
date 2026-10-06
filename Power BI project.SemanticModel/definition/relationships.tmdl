@@ -1,0 +1,58 @@
+relationship 3333d37e-29c7-42b2-83d3-72c23e5322d2
+	joinOnDateBehavior: datePartOnly
+	fromColumn: calls.call_date
+	toColumn: LocalDateTable_1bfd8568-2da0-4529-a3ca-2e637c64558f.Date
+
+relationship acd98fe9-00d8-44b8-a48f-5301195e063a
+	joinOnDateBehavior: datePartOnly
+	fromColumn: leads.generated_date
+	toColumn: LocalDateTable_d05b6aec-39ed-4d99-a452-c6c25a1d5e11.Date
+
+relationship 1b2b5ea8-30aa-f1e2-1f65-d2d634e9a188
+	fromColumn: students_dim.course_id
+	toColumn: courses_dim.'course id'
+
+relationship ea4f57b3-338a-e0cf-857a-c8e05c8742b0
+	fromColumn: students_dim.branch_id
+	toColumn: branches_dim.'branch id'
+
+relationship 9014b008-5b36-7c1f-1106-21e7db26e149
+	crossFilteringBehavior: bothDirections
+	fromCardinality: one
+	fromColumn: students_dim.student_id
+	toColumn: fees.student_id
+
+relationship c42be12e-53c7-1ee7-ed0d-90bc86ce1324
+	crossFilteringBehavior: bothDirections
+	fromCardinality: one
+	fromColumn: students_dim.student_id
+	toColumn: admissions.'student id'
+
+relationship 829eb8de-7809-4e63-2bfd-f8907b9b9569
+	fromColumn: calls.student_id
+	toColumn: students_dim.student_id
+
+relationship e72e1d62-2092-4145-5522-3ff7c5d5e6ba
+	crossFilteringBehavior: bothDirections
+	fromCardinality: one
+	fromColumn: students_dim.student_id
+	toColumn: placements.student_id
+
+relationship af05683f-b5b0-8a82-68be-b810b007f222
+	fromColumn: admissions.'counselor id'
+	toColumn: employees_dim.emp_id
+
+relationship e0cba090-b279-42e6-a8ed-7a01c308de1d
+	joinOnDateBehavior: datePartOnly
+	fromColumn: DateTable.Date
+	toColumn: LocalDateTable_d55e8760-6ee0-4e20-8668-8d66b6ef37ad.Date
+
+relationship 25bb87fd-a86d-6da3-094b-68ba397911fe
+	fromColumn: students_dim.admission_date
+	toColumn: DateTable.Date
+
+relationship 2ab3f9e3-bbb7-bc65-4663-d7bd3e691ae4
+	isActive: false
+	fromColumn: admissions.'admission date'
+	toColumn: DateTable.Date
+

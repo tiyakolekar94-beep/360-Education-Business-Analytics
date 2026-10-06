@@ -1,0 +1,32 @@
+table 'lead measures'
+	lineageTag: fec4468b-282b-409f-8a93-e25678657f4a
+
+	measure 'total leads' = ```
+			COUNT(leads[lead_id]) 
+			```
+		formatString: 0
+		lineageTag: e572a14c-bf59-44d9-a5b8-266cea746d15
+
+	measure 'converted leads' = ```
+			CALCULATE(COUNT(leads[lead_id]),leads[lead_status]="converted") 
+			```
+		formatString: 0
+		lineageTag: 4e0e15ed-63dd-4d7d-a99b-b77ab37a6c8e
+
+	measure 'lead conversion %' = DIVIDE([converted leads],[total leads])* 100
+		lineageTag: 45ad9acc-c4ea-465d-850b-d7c1d9b0e070
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition 'lead measures' = m
+		mode: import
+		source =
+				let
+				    Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i44FAA==", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [Column1 = _t]),
+				    #"Changed Type" = Table.TransformColumnTypes(Source,{{"Column1", type text}}),
+				    #"Removed Columns" = Table.RemoveColumns(#"Changed Type",{"Column1"})
+				in
+				    #"Removed Columns"
+
+	annotation PBI_ResultType = Table
+
